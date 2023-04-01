@@ -140,11 +140,16 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="lexicalDesign.cpp" />
+    <ClCompile Include="LLDesign.cpp" />
     <ClCompile Include="MAIN.cpp" />
+    <ClCompile Include="RDDesign.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="grammarDesign.h" />
     <ClInclude Include="lexicalDesign.h" />
     <ClInclude Include="LEXsnl.h" />
+    <ClInclude Include="LLDesign.h" />
+    <ClInclude Include="RDDesign.h" />
     <ClInclude Include="resource.h" />
   </ItemGroup>
   <ItemGroup>
@@ -152,6 +157,7 @@
   </ItemGroup>
   <ItemGroup>
     <Text Include="source.txt" />
+    <Text Include="test.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

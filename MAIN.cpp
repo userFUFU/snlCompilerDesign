@@ -3,22 +3,55 @@
 
 #include<bits/stdc++.h>
 #include "lexicalDesign.h"
+#include "grammarDesign.h"
+#include "RDDesign.h"
+#include "LLDesign.h"
+
 using namespace std;
+#define maxn 100086
+
+Token token[maxn];
+int tokencnt=1;
+
+extern map<LexType, string> enumToStr;
 
 int main() {
-	freopen("source.txt", "r", stdin);
+	freopen("./examples/array.txt", "r", stdin);
 
 	string tokenList = ""; // 词法分析结果
 	string sourceList = "";  // 源程序的一行
 	int linecnt = 1; // 行计数器
 
 
+	/* 词法分析 */
+
 	// 读入每一行，对每一行进行词法分析
 	while (getline(cin, sourceList)){
-		// cout << sourceList<<endl;
-		getToken(sourceList,linecnt);
+		cout << sourceList<<endl;
+		tokencnt = getToken(sourceList,linecnt,token,tokencnt);
 		linecnt++;
 	}
+	// EOF
+	token[tokencnt].type_inf = ENDFILE;
+	token[tokencnt].content = "EOF";
+	token[tokencnt].linenum = linecnt;
+	token[tokencnt].tokennum = tokencnt;
+	// 输出tokenlist
+	for (int i = 1; i <= tokencnt; i++) {
+		cout << token[i].tokennum << " " << token[i].linenum << " " << enumToStr[token[i].type_inf] << " " << token[i].content << endl;
+	}
 
+	/* 语法分析 */
+
+	// 递归下降分析法
+	grammarTreeNode* RDRoot = RDmain(token, tokencnt);
+	printGrammarTree(0, RDRoot);
+	// LL(1)分析法
+	//grammarTreeNode* LLRoot = LLmain(token, tokencnt);
+	//printGrammarTree(0, LLRoot);
+
+
+	// 语义分析
+	                        
 	return 0;
 }

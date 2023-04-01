@@ -1,6 +1,15 @@
 #pragma once
 #include<bits/stdc++.h>
+#include "LEXsnl.h"
 using namespace std;
 
+typedef struct{
+	LexType type_inf;
+	string content;
+	int linenum;
+	int tokennum;
+}Token;
 
-void getToken(string str,int linenum);
+int getToken(string str,int linenum,Token* token,int tokencnt);
+
+
