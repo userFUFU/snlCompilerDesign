@@ -23,7 +23,7 @@ begin
 end
  
 begin
-  a[(3+4)*5]:=5;
+  a[3+(4*5)]:=5;
   v1:=a[35];
   
   if v1 < 10    then   write(v1+10)

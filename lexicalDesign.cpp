@@ -175,7 +175,7 @@ int getToken(string str,int linenum,Token* token,int tokencnt){
 				index++;
 				continue;
 			}
-			else if(token[tokencnt-1].type_inf = END1){
+			else if(token[tokencnt-1].type_inf == END1){
 				//cout << linenum << " ³ÌÐò½áÊø " << "END" << " " << "ÎÞ" << endl;
 				token[tokencnt].type_inf = DOT;
 				token[tokencnt].content = ".";

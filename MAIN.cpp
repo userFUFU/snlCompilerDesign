@@ -18,7 +18,8 @@ extern map<LexType, string> enumToStr;
 
 int main() {
 	// freopen("./examples/errorTest/contentAfterEnd.txt", "r", stdin);
-	 freopen("./examples/var_val.txt", "r", stdin);
+	 //freopen("./examples/var_val.txt", "r", stdin);
+	 freopen("./examples/exp.txt", "r", stdin);
 	// freopen("./source.txt", "r", stdin);
 
 	string tokenList = ""; // 词法分析结果
@@ -55,6 +56,11 @@ int main() {
 	grammarTreeNode* LLRoot = LLmain(token, tokencnt);
 	printGrammarTree(0, LLRoot);
 	cout << endl << "*************************************************************************************************" << endl;
+
+
+	// Format Code
+	generateCode(0, RDRoot, NULL);
+
 
 	// 语义分析
 	//smtMain(RDRoot);

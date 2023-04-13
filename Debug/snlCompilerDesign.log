@@ -1,3 +1,13 @@
-﻿  MAIN.cpp
+﻿  LLDesign.cpp
 D:\桌面\大三下\编译原理课设\snlCompilerDesign\LEXsnl.h(1,1): warning C4819: 该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失
+  MAIN.cpp
+D:\桌面\大三下\编译原理课设\snlCompilerDesign\LEXsnl.h(1,1): warning C4819: 该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失
+  RDDesign.cpp
+D:\桌面\大三下\编译原理课设\snlCompilerDesign\RDDesign.cpp(1,1): warning C4819: 该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失
+D:\桌面\大三下\编译原理课设\snlCompilerDesign\LEXsnl.h(1,1): warning C4819: 该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失
+  smtDesign.cpp
+D:\桌面\大三下\编译原理课设\snlCompilerDesign\LEXsnl.h(1,1): warning C4819: 该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失
+  正在生成代码...
+D:\桌面\大三下\编译原理课设\snlCompilerDesign\RDDesign.cpp(809): warning C4715: “RDActParamMore”: 不是所有的控件路径都返回值
+D:\桌面\大三下\编译原理课设\snlCompilerDesign\grammarDesign.h(344): warning C4715: “convertOp”: 不是所有的控件路径都返回值
   snlCompilerDesign.vcxproj -> D:\桌面\大三下\编译原理课设\snlCompilerDesign\Debug\snlCompilerDesign.exe

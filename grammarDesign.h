@@ -55,6 +55,9 @@ typedef enum { ArrayK=1, CharK, IntegerK, RecordK, DecIdK }  DecKind;
 static map<DecKind, string>displayDecKind{
 	{ArrayK,"ArrayK"},{CharK,"CharK"},{IntegerK,"IntegerK"},{RecordK,"RecordK"},{DecIdK,"DecIdK"}
 };
+static map<DecKind, string>genCodeDecKind{
+    {ArrayK,"array"},{CharK,"char"},{IntegerK,"integer"},{RecordK,"record"}
+};
 // 若为StmtK-语句类型节点，则后续可能为以下类型
 typedef enum { IfK=1, WhileK, AssignK, ReadK, WriteK, CallK, ReturnK } StmtKind;
 static map<StmtKind, string>displayStmtKind{
@@ -317,4 +320,404 @@ inline void printGrammarTree(int spaceNum, grammarTreeNode* r) {
 	printGrammarTree(spaceNum, r->sibling);
 }
 
-inline string generateCode(){}
+
+inline string printName(grammarTreeNode* r) {
+    string res = r->name[0];
+    for (int i = 1; i < r->nameNum; i++)
+        res += ", " + r->name[i];
+    return res;
+}
+
+inline string convertOp(LexType op) {
+    switch (op) {
+    case PLUS:return "+"; 
+    case MINUS:return "-";
+    case TIMES:return "*";
+    case OVER:return "/";
+    case EQ:return "=";
+    case LT:return "<";
+    default:
+        cout << "error! op not exist.";
+        break;
+    }
+    
+}
+
+inline bool LsonNeedParen(grammarTreeNode* r) {
+    if (r->kind.exp == OpK && r->child[0]->kind.exp == OpK) {
+        bool flag1 = convertOp(r->Attr.expAttr.op) ==  "*" || convertOp(r->Attr.expAttr.op) == "/";
+        bool flag2 = convertOp(r->child[0]->Attr.expAttr.op) == "+" || convertOp(r->child[0]->Attr.expAttr.op) == "*";
+        return flag1 && flag2;
+    }
+    return false;
+}
+inline bool RsonNeedParen(grammarTreeNode* r) {
+    if (r->kind.exp == OpK && r->child[1]->kind.exp == OpK) {
+        string op1 = convertOp(r->Attr.expAttr.op), op2 = convertOp(r->child[1]->Attr.expAttr.op);
+        if (op1 == "*")
+            return op2 == "+" || op2 ==  "-";
+        if (op1 == "*")
+            return op2 == "+" || op2 == "-";
+        return op1 == "*";
+    }
+    return false;
+}
+inline string generateCode(int tab, grammarTreeNode *r, grammarTreeNode* fa){
+    string res = "";
+    string tabSpace = "";
+    for (int i = 0; i < tab; i++) {
+        tabSpace += "    ";
+    }
+    res += tabSpace;
+    cout << (tabSpace);
+    grammarTreeNode* c = NULL;
+    switch (r->nodeKind) {
+    case ProK: {
+        bool flag = false;
+        for (int i = 0; i < 3; i++) {
+            if (r->child[i] != NULL) {
+                c = r->child[i];
+                while (c != NULL) {
+                    if (!flag) {
+                        flag = true;
+                    }
+                    else {
+                        res += "\r\n";
+                        cout << endl;
+                    }
+                    res += generateCode(0, c, r);
+                    c = c->sibling;
+                }
+            }
+        }
+        res += ".";
+        cout << (".");
+        break;
+    }
+
+    case PheadK:
+        res += "program " + r->name[0];
+        cout << ("program " + r->name[0]);
+        break;
+    case TypeK:
+        res += "type";
+        cout << ("type");
+        c = r -> child[0];
+        while (c != NULL) {
+            cout << endl;
+            res += "\r\n" + generateCode(tab + 1, c , r);
+            c = c -> sibling;
+        }
+        break;
+    case VarK:
+        res += "var";
+        cout << ("var");
+        c = r->child[0];
+        while (c != NULL) {
+            cout << endl;
+            res += "\r\n" + generateCode(tab + 1, c, r);
+            c = c -> sibling;
+        }
+        break;
+    case DecK:
+        assert(fa != NULL);
+        switch (fa->nodeKind) {
+        case TypeK:
+            switch (r->kind.dec) {
+            case ArrayK: {
+                string arr = r->Attr.arrayAttr.low + ".." + r->Attr.arrayAttr.up;
+                res += printName(r) + " = array[" + arr + "] of " + genCodeDecKind[r->Attr.arrayAttr.arrayKind] + ";";
+                cout << printName(r) + " = array[" + arr + "] of " + genCodeDecKind[r->Attr.arrayAttr.arrayKind] + ";";
+                break;
+            }
+            case CharK:
+                res += printName(r) + " = char;";
+                cout << (printName(r) + " = char;");
+                break;
+            case IntegerK:
+                res += printName(r) + " = integer;";
+                cout << (printName(r) + " = integer;");
+                break;
+            case RecordK: {
+                string pre = string((printName(r) + " = ").length(), ' ');
+                res += printName(r) + " = record\r\n";
+                cout << (printName(r) + " = record\r\n");
+                c = r->child[0];
+                while (c != NULL) {
+                    res += generateCode(tab + 1 + pre.length() / 4, c, r) + "\r\n";
+                    cout << endl;
+                    c = c->sibling;
+                }
+                res += tabSpace + pre + "end;";
+                cout << (tabSpace + pre + "end;");
+                break;
+            }
+            case DecIdK:
+                res += printName(r) + " = " + r->typeName + ";";
+                cout << (printName(r) + " = " + r->typeName + ";");
+                break;
+            }
+            break;
+        case VarK:
+        case DecK:
+        case ProcDecK:
+            // 函数参数列表中的变参
+            if (fa->nodeKind == ProcDecK && r->Attr.paramAttr.paramType == varparamType) {
+                res += "var ";
+                cout << ("var ");
+            }
+            switch (r->kind.dec) {
+            case ArrayK: {
+                //  Debug.Assert(Attr != NULL && Attr.arrayAttr != NULL);
+                string arr = to_string(r->Attr.arrayAttr.low) + ".." + to_string(r->Attr.arrayAttr.up);
+                res += "array[" + arr + "] of " + genCodeDecKind[r->Attr.arrayAttr.arrayKind] + " " + printName(r);
+                cout << ("array[" + arr + "] of " + genCodeDecKind[r->Attr.arrayAttr.arrayKind] + " " + printName(r));
+                break;
+            }
+            case CharK:
+                res += "char " + printName(r);
+                cout << ("char " + printName(r));
+                break;
+            case IntegerK:
+                res += "integer " + printName(r);
+                cout << ("integer " + printName(r));
+                break;
+            case RecordK:
+                if (fa->nodeKind != ProcDecK) {
+                    res += "record\r\n";
+                    cout << ("record\r\n");
+                    c = r->child[0];
+                    while (c != NULL) {
+                        res += generateCode(tab + 1, c, r) + "\r\n";
+                        cout << endl;
+                        if (c -> sibling != NULL) {
+                            cout << (";");
+                            res += ";";
+                        }
+                        c = c -> sibling;
+                    }
+                    res += tabSpace + "end " + printName(r);
+                    cout << (tabSpace + "end " + printName(r));
+                }
+                else {
+                    res += "record ";
+                    cout << ("record ");
+                    c = r->child[0];
+                    while (c != NULL) {
+                        res += generateCode(0, c, r) + " ";
+                        cout << (" ");
+                        c = c -> sibling;
+                    }
+                    res += "end " + printName(r);
+                    cout << ("end " + printName(r));
+                }
+
+                break;
+            case DecIdK:
+                res += r->typeName + " " + printName(r);
+                cout << (r->typeName + " " + printName(r));
+                break;
+            }
+            if (fa->nodeKind != ProcDecK) {
+                res += ";";
+                cout << (";");
+                // 正常语句, 非参数列表
+            }
+            break;
+        }
+        break;
+
+    case ProcDecK:
+        res += "procedure " + r->name[0] + "(";
+        cout << ("procedure " + r->name[0] + "(");
+        c = r->child[0];
+        if (c != NULL) {
+            if (c->nodeKind == DecK) {
+                while (c != NULL) {
+                    res += generateCode(0, c, r);
+                    if (c -> sibling == NULL) {
+                        res += ");";
+                        cout << (");");
+                    }
+                    else {
+                        res += "; ";
+                        cout << ("; ");
+                    }
+                    c = c -> sibling;
+                }
+            }
+            else {
+                res += ");";
+                cout << (");");
+            }
+        }
+        for (int i = 1; i < 3; i++) {
+            if (r->child[i] != NULL) {
+                cout << ("\r\n");
+                res += "\r\n" + generateCode(tab + 1, r->child[i], r);
+            }
+        }
+        break;
+    case StmLK:
+        res += "begin";
+        cout << ("begin");
+        c = r->child[0];
+        if (c != NULL) {
+            while (c != NULL) {
+                cout << ("\r\n");
+                res += "\r\n" + generateCode(tab + 1, c, r);
+                if (c -> sibling != NULL) {
+                    cout << (";");
+                    res += ";";
+                }
+                c = c -> sibling;
+            }
+        }
+        res += "\r\n" + tabSpace + "end";
+        cout << ("\r\n" + tabSpace + "end");
+        break;
+    case StmtK:
+        switch (r->kind.stmt) {
+        case IfK:
+            cout << ("if ");
+            res += "if ";
+            res += generateCode(0, r->child[0], r);
+            cout << (" then");
+            res += " then";
+            c = r->child[1];
+            if (c != NULL) {
+                while (c != NULL) {
+                    cout << endl;
+                    res += "\r\n" + generateCode(tab + 1, c, r);
+                    if (c -> sibling != NULL) {
+                        cout << (";");
+                        res += ";";
+                    }
+                    c = c -> sibling;
+                }
+            }
+            c = r->child[2];
+            if (c != NULL) {
+                cout << ("\r\n" + tabSpace + "else");
+                res += "\r\n" + tabSpace + "else";
+                while (c != NULL) {
+                    cout << endl;
+                    res += "\r\n" + generateCode(tab + 1, c, r);
+                    if (c -> sibling != NULL) {
+                        cout << (";");
+                        res += ";";
+                    }
+                    c = c -> sibling;
+                }
+            }
+            cout << ("\r\n" + tabSpace + "fi");
+            res += "\r\n" + tabSpace + "fi";
+            break;
+        case WhileK:
+            cout << ("while ");
+            res += "while " + generateCode(0, r->child[0], r) + " do";
+            cout << (" do");
+            c = r->child[1];
+            while (c != NULL) {
+                cout << endl;
+                res += "\r\n" + generateCode(tab + 1, c, r);
+                if (c -> sibling != NULL) {
+                    cout << (";");
+                    res += ";";
+                }
+                c = c -> sibling;
+            }
+            res += "\r\n" + tabSpace + "endwh";
+            cout << ("\r\n" + tabSpace + "endwh");
+            break;
+        case AssignK:
+            res += generateCode(0, r->child[0], r);
+            cout << (" := ");
+            res += " := ";
+            res += generateCode(0, r->child[1], r);
+            break;
+        case ReadK:
+            res += "read(" + printName(r) + ")";
+            cout << ("read(" + printName(r) + ")");
+            break;
+        case WriteK:
+            cout << ("write(");
+            res += "write(" + generateCode(0, r->child[0], r) + ")";
+            cout << (")");
+            break;
+        case CallK:
+            res += generateCode(0, r->child[0], r);
+            cout << ("(");
+            res += "(";
+            c = r->child[1];
+            while (c != NULL) {
+                res += generateCode(0, c, r);
+                if (c->sibling != NULL) {
+                    cout << (", ");
+                    res += ", ";
+                }
+                c = c->sibling;
+            }
+            cout << (")");
+            res += ")";
+            break;
+        case ReturnK:
+            break;
+        }
+        break;
+    case ExpK:
+        switch (r->kind.exp) {
+        case OpK: {
+            grammarTreeNode* ls = r->child[0];
+            grammarTreeNode* rs = r->child[1];
+            if (LsonNeedParen(r)) {
+                cout << ("(");
+                res += "(" + generateCode(0, ls, r) + ")";
+                cout << (")");
+            }
+            else {
+                res += generateCode(0, ls, r);
+            }
+            res += " " + convertOp(r->Attr.expAttr.op) + " ";
+            cout << (" " + convertOp(r->Attr.expAttr.op) + " ");
+            if (RsonNeedParen(r)) {
+                cout << ("(");
+                res += "(" + generateCode(0, rs, r) + ")";
+                cout << (")");
+            }
+            else {
+                res += generateCode(0, rs, r);
+            }
+            break;
+        }
+        case ConstK:
+            cout << (r->Attr.expAttr.val);
+            res += r->Attr.expAttr.val;
+            break;
+        case ExpIdK:
+            switch (r->Attr.expAttr.varKind) {
+            case IdV:
+                res += r->name[0];
+                cout << (r->name[0]);
+                break;
+            case ArrayMembV:
+                cout << (r->name[0] + "[");
+                res += r->name[0] + "[" + generateCode(0, r->child[0], r) + "]";
+                cout << ("]");
+                break;
+            case FieldMembV:
+                cout << (r->name[0] + ".");
+                res += r->name[0] + "." + generateCode(0, r->child[0], r);
+                break;
+            }
+            break;
+        }
+        break;
+    }
+    /*if(fa != NULL && fa->nodeKind != NodeKind.ProcDecK && sibling != NULL && nodeKind != NodeKind.StmtK) {
+        cout << endl;
+        res += "\r\n" + sibling.generateCode(tab, fa);
+    }*/
+    return res;
+
+}
