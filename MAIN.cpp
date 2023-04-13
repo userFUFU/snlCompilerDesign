@@ -17,9 +17,8 @@ int tokencnt=1;
 extern map<LexType, string> enumToStr;
 
 int main() {
-	// freopen("./examples/errorTest/contentAfterEnd.txt", "r", stdin);
-	 //freopen("./examples/var_val.txt", "r", stdin);
-	 freopen("./examples/exp.txt", "r", stdin);
+	 //freopen("./examples/errorTest/contentAfterEnd.txt", "r", stdin);
+	 freopen("./examples/array.txt", "r", stdin);
 	// freopen("./source.txt", "r", stdin);
 
 	string tokenList = ""; // 词法分析结果

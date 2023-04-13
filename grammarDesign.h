@@ -425,7 +425,7 @@ inline string generateCode(int tab, grammarTreeNode *r, grammarTreeNode* fa){
         case TypeK:
             switch (r->kind.dec) {
             case ArrayK: {
-                string arr = r->Attr.arrayAttr.low + ".." + r->Attr.arrayAttr.up;
+                string arr = to_string(r->Attr.arrayAttr.low) + ".." + to_string(r->Attr.arrayAttr.up);
                 res += printName(r) + " = array[" + arr + "] of " + genCodeDecKind[r->Attr.arrayAttr.arrayKind] + ";";
                 cout << printName(r) + " = array[" + arr + "] of " + genCodeDecKind[r->Attr.arrayAttr.arrayKind] + ";";
                 break;
@@ -714,10 +714,6 @@ inline string generateCode(int tab, grammarTreeNode *r, grammarTreeNode* fa){
         }
         break;
     }
-    /*if(fa != NULL && fa->nodeKind != NodeKind.ProcDecK && sibling != NULL && nodeKind != NodeKind.StmtK) {
-        cout << endl;
-        res += "\r\n" + sibling.generateCode(tab, fa);
-    }*/
     return res;
 
 }
