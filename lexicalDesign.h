@@ -10,6 +10,7 @@ typedef struct{
 	int tokennum;
 }Token;
 
+extern bool endfile;
 int getToken(string str,int linenum,Token* token,int tokencnt);
 
 

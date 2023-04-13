@@ -26,4 +26,4 @@ f(x+y,y/x,x);
 write(x);
 write(y);
 write(z)
-end. 
+end.   

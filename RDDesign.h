@@ -1,7 +1,5 @@
 #pragma once
 #include<bits/stdc++.h>
-#include "LEXsnl.h"
-#include "grammarDesign.h"
 using namespace std;
 
 

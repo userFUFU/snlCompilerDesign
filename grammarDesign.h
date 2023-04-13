@@ -62,7 +62,7 @@ static map<StmtKind, string>displayStmtKind{
 };
 // 若为ExpK-表达式类型节点，则后续可能为以下类型
 typedef enum { OpK=1, ConstK, ExpIdK } ExpKind;
-static map<ExpKind, string>displayExptKind{{OpK,"OpK"},{ConstK,"ConstK"},{ExpIdK,"ExpIdK"}};
+static map<ExpKind, string>displayExpKind{{OpK,"OpK"},{ConstK,"ConstK"},{ExpIdK,"ExpIdK"}};
 // 若为VarK-变量类型节点，则后续可能为以下类型
 typedef enum { IdV=1, ArrayMembV, FieldMembV } VarKind;
 static map<VarKind, string>displayVarKind{ {IdV,"IdV"},{ArrayMembV,"ArrayMembV"},{FieldMembV,"FieldMembV"} };
@@ -125,3 +125,196 @@ typedef struct grammarnode{
 
 
 
+
+
+inline void printGrammarTree(int spaceNum, grammarTreeNode* r) {
+	if (r == NULL)return;
+
+	for (int i = 0; i < spaceNum; i++)cout << " ";
+
+	//cout << r->nodeKind << " ";
+
+	string str = displayNodeKind[r->nodeKind];
+	switch (r->nodeKind) {
+	case ProK:
+		cout << str << " ";
+		break;
+	case PheadK: // PheadK p 
+		cout << str << " " << r->name[0];
+		break;
+		// Deck ArrayK a 1 20 IntegerK 5 25 
+		// DecK IntegerK v1 v2
+		// Deck IntegerK num valparam 
+	case DecK:
+	{
+		cout << str << " ";
+
+		// 基本语法信息
+		string decKstr = displayDecKind[r->kind.dec];
+		switch (r->kind.dec) {
+		case ArrayK:
+		{
+			cout << decKstr << " ";
+			cout << r->Attr.arrayAttr.low << " " << r->Attr.arrayAttr.up << " ";
+			// 数组的基本类型：char，int
+			if (r->Attr.arrayAttr.arrayKind == CharK) {
+				cout << "CharK" << " ";
+			}
+			else if (r->Attr.arrayAttr.arrayKind == IntegerK) {
+				cout << "IntegerK" << " ";
+			}
+			break;
+		}
+		case CharK:
+			cout << decKstr << " ";
+			break;
+		case IntegerK:
+			cout << decKstr << " ";
+			break;
+		case RecordK:
+			cout << decKstr << " ";
+			break;
+		case DecIdK:
+			cout << decKstr << " " << r->typeName << " ";
+			break;
+		}
+		// 输出名字
+		if (r->nameNum) {
+			for (int i = 0; i < r->nameNum; i++)cout << r->name[i] << " ";
+		}
+		else {
+			cout << "error!DecK . no name.";
+		}
+
+		// 是不是函数参数类型
+		string paramTystr = displayParamType[r->Attr.paramAttr.paramType];
+		if (r->Attr.paramAttr.paramType == valparamType) { // 值参
+			cout << paramTystr << " ";
+		}
+		else if (r->Attr.paramAttr.paramType == varparamType) { // 变参
+			cout << paramTystr << " ";
+		}
+		break;
+	}
+	case TypeK:
+		cout << str << " ";
+		break;
+	case VarK:
+		cout << str << " ";
+		break;
+	case ProcDecK: // ProcDecK q 
+		cout << str << " " << r->name[0];
+		break;
+	case StmLK:
+		cout << str << " ";
+		break;
+	case StmtK: // StmtK Assign
+	{
+		cout << str << " ";
+
+		string stmtKstr = displayStmtKind[r->kind.stmt];
+		switch (r->kind.stmt) {
+		case IfK:
+			cout << stmtKstr << " ";
+			break;
+		case WhileK:
+			cout << stmtKstr << " ";
+			break;
+		case AssignK:
+			cout << stmtKstr << " ";
+			break;
+		case ReadK:
+			cout << stmtKstr << " " << r->name[0] << " ";
+			break;
+		case WriteK:
+			cout << stmtKstr << " ";
+			break;
+		case CallK:// StmtK CallK q 
+			cout << stmtKstr << " " << r->name[0] << " ";
+			break;
+		case ReturnK:
+			cout << stmtKstr << " ";
+			break;
+		default:
+			cout << "error! StmtK.";
+			break;
+		}
+		break;
+	}
+	// ExpK Op <
+	//      ExpK IdV v1
+	//      ExpK Const 10
+	case ExpK:
+	{
+		cout << str << " ";
+
+		string expKstr = displayExpKind[r->kind.exp];
+		switch (r->kind.exp) {
+			// + - * / = <
+		case OpK: {
+			cout << expKstr << " ";
+			switch (r->Attr.expAttr.op) {
+			case PLUS:cout << "+" << " "; break;
+			case MINUS:cout << "-" << " "; break;
+			case TIMES:cout << "*" << " "; break;
+			case OVER:cout << "/" << " "; break;
+			case EQ:cout << "=" << " "; break;
+			case LT:cout << "<" << " "; break;
+			default:
+				cout << "error! op not exist.";
+				break;
+			}
+			break;
+		}
+				// VarKind
+		case ConstK: {
+			cout << expKstr << " ";
+
+			string varKstr = displayVarKind[r->Attr.expAttr.varKind];
+			switch (r->Attr.expAttr.varKind) {
+			case IdV:cout << varKstr << " "; break;
+			case ArrayMembV:cout << varKstr << " "; break;
+			case FieldMembV:cout << varKstr << " "; break;
+				/*default:
+					cout << "error! var type.";
+					break;*/
+			}
+			cout << r->Attr.expAttr.val << " ";
+			break;
+		}
+				   // 
+		case ExpIdK: {
+			cout << expKstr << " ";
+
+			string varKstr = displayVarKind[r->Attr.expAttr.varKind];
+			switch (r->Attr.expAttr.varKind) {
+			case IdV:cout << varKstr << " " << r->name[0] << " "; break;
+			case ArrayMembV:cout << varKstr << " " << r->name[0] << " "; break;
+			case FieldMembV:cout << varKstr << " " << r->name[0] << " "; break;
+			default:
+				cout << "error! var type.";
+				break;
+			}
+			break;
+		}
+
+		default:
+			cout << "error! ExpK";
+			break;
+		}
+		break;
+	}
+	default:
+		cout << "error in print grammar tree." << endl;
+		break;
+	}
+
+	cout << endl;
+
+	for (int i = 0; i < 3; i++) {
+		printGrammarTree(spaceNum + 4, r->child[i]);
+	}
+	printGrammarTree(spaceNum, r->sibling);
+}
+
+inline string generateCode(){}

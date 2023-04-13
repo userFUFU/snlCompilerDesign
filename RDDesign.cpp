@@ -179,6 +179,7 @@ void RDTypeName(grammarTreeNode* t) {
 		}
 		else {
 			cout << curToken[tokenNum].linenum << " " << curToken[tokenNum].content << " error! unexpected token!" << endl;
+			//exit(0);
 			tokenNum++;
 		}
 	}
@@ -200,6 +201,7 @@ void RDBaseType(grammarTreeNode* t) {
 	}
 	else {
 		cout << curToken[tokenNum].linenum << " " << curToken[tokenNum].content << " error! unexpected token!" << endl;
+		//exit(0);
 		tokenNum++;
 	}
 
@@ -217,6 +219,7 @@ void RDStructureType(grammarTreeNode* t) {
 	}
 	else {
 		cout << curToken[tokenNum].linenum << " " << curToken[tokenNum].content << " error! unexpected token!" << endl;
+		//exit(0);
 		tokenNum++;
 	}
 }
@@ -252,6 +255,7 @@ void RDRecType(grammarTreeNode* t) {
 	}
 	else {
 		cout << curToken[tokenNum].linenum << " " << curToken[tokenNum].content << " error! unexpected token!" << endl;
+		//exit(0);
 		//tokenNum++;
 	}
 	Match(END1);
@@ -277,6 +281,7 @@ grammarTreeNode* RDFieldDecList() {
 		}
 		else {
 			cout << curToken[tokenNum].linenum << " " << curToken[tokenNum].content << " error! unexpected token!" << endl;
+			//exit(0);
 			tokenNum++;
 		}
 		t->sibling = p;
@@ -297,6 +302,7 @@ grammarTreeNode* RDFieldDecMore() {
 	}
 	else {
 		cout << curToken[tokenNum].linenum << " " << curToken[tokenNum].content << " error! unexpected token!" << endl;
+		//exit(0);
 		tokenNum++;
 	}
 	return t;
@@ -322,6 +328,7 @@ void RDIdMore(grammarTreeNode* t) {
 		}
 		else {
 			cout << curToken[tokenNum].linenum << " " << curToken[tokenNum]. content << " error! unexpected token!" << endl;
+			//exit(0);
 			tokenNum++;
 		}
 	}
@@ -340,6 +347,7 @@ grammarTreeNode* RDVarDec() {
 	}
 	else {		
 		cout << curToken[tokenNum].linenum << " " << curToken[tokenNum].content << " error! unexpected token!" << endl;
+		//exit(0);
 		tokenNum++;
 	}
 	return t;
@@ -353,6 +361,7 @@ grammarTreeNode* RDVarDeclaration() {
 	t = RDVarDecList();
 	if (t == NULL) {
 		cout<<curToken[tokenNum].linenum<<" " << curToken[tokenNum].content << " error! var declaration is NULL";
+		//exit(0);
 	}
 	return t;
 }
@@ -386,6 +395,7 @@ grammarTreeNode* RDVarDecMore() {
 	}
 	else {
 		cout << curToken[tokenNum].linenum << " " << curToken[tokenNum].content << " error! unexpected token!" << endl;
+		//exit(0);
 		tokenNum++;
 	}
 	return t;
@@ -400,6 +410,7 @@ void RDVarIdList(grammarTreeNode* t) {
 	}
 	else {
 		cout << curToken[tokenNum].linenum << " " << curToken[tokenNum].content << " error! ID without name ." << endl;
+		//exit(0);
 		tokenNum++;
 	}
 	RDvarIdMore(t);
@@ -415,6 +426,7 @@ void RDvarIdMore(grammarTreeNode* t) {
 		}
 		else {
 			cout << curToken[tokenNum].linenum << " " << curToken[tokenNum].content << " error! unexpected token!" << endl;
+			//exit(0);
 			tokenNum++;
 		}
 	}
@@ -430,6 +442,7 @@ grammarTreeNode* RDProcDec() {
 		}
 		else {
 			cout << curToken[tokenNum].linenum << " " << curToken[tokenNum].content << " error! unexpected token!" << endl;
+			//exit(0);
 			tokenNum++;
 		}
 	}
@@ -463,15 +476,15 @@ grammarTreeNode* RDProcDeclaration() {
 // 形参列表
 void RDparamlist(grammarTreeNode* t) {
 	grammarTreeNode* p =  NULL;
-	if (curToken[tokenNum].type_inf != RPAREN) {
-		if (curToken[tokenNum].type_inf == INTEGER || curToken[tokenNum].type_inf == CHAR1 || curToken[tokenNum].type_inf == RECORD || curToken[tokenNum].type_inf == ARRAY || curToken[tokenNum].type_inf == ID || curToken[tokenNum].type_inf == VAR) {
-			p = RDParamDecList();
-			t->child[0] = p;
-		}
-		else {
-			cout << curToken[tokenNum].linenum << " " << curToken[tokenNum].content << " error! unexpected token!" << endl;
-			tokenNum++;
-		}
+	if (curToken[tokenNum].type_inf == RPAREN)return;
+	if (curToken[tokenNum].type_inf == INTEGER || curToken[tokenNum].type_inf == CHAR1 || curToken[tokenNum].type_inf == RECORD || curToken[tokenNum].type_inf == ARRAY || curToken[tokenNum].type_inf == ID || curToken[tokenNum].type_inf == VAR) {
+		p = RDParamDecList();
+		t->child[0] = p;
+	}
+	else {
+		cout << curToken[tokenNum].linenum << " " << curToken[tokenNum].content << " error! unexpected token!" << endl;
+		//exit(0);
+		tokenNum++;
 	}
 }
 
@@ -490,18 +503,19 @@ grammarTreeNode* RDParamDecList() {
 // 更多形参
 grammarTreeNode* RDParamMore() {
 	grammarTreeNode* t = NULL;
-	if (curToken[tokenNum].type_inf != RPAREN) {
-		if (curToken[tokenNum].type_inf == SEMI) {
-			Match(SEMI);
-			t = RDParamDecList();
-			if (t == NULL) {
-				cout << curToken[tokenNum].linenum << " " << curToken[tokenNum].content << " error! Without param declaration!";
-			}
-			else {
-				cout << curToken[tokenNum].linenum << " " << curToken[tokenNum].content << " error!unexpected token." << endl;
-				tokenNum++;
-			}
+	if (curToken[tokenNum].type_inf == RPAREN) return t; 
+	if (curToken[tokenNum].type_inf == SEMI) {
+		Match(SEMI);
+		t = RDParamDecList();
+		if (t == NULL) {
+			cout << curToken[tokenNum].linenum << " " << curToken[tokenNum].content << " error! Without param declaration!";
+			//exit(0);
 		}
+	}
+	else {
+		cout << curToken[tokenNum].linenum << " " << curToken[tokenNum].content << " error!unexpected token." << endl;
+		//exit(0);
+		tokenNum++;
 	}
 	return t;
 }
@@ -526,6 +540,7 @@ grammarTreeNode* RDParam() {
 	}
 	else {
 		cout << curToken[tokenNum].linenum << " " << curToken[tokenNum].content << " error!unexpected token." << endl;
+		//exit(0);
 		tokenNum++;
 	}
 	return t;
@@ -542,13 +557,14 @@ void RDFormList(grammarTreeNode* t) {
 
 // fidMore ::=   ε |  , formList
 void RDFidMore(grammarTreeNode* t) {
-	if (curToken[tokenNum].type_inf == SEMI || curToken[tokenNum].type_inf == RPAREN);
-	else if (curToken[tokenNum].type_inf == COMMA) {
+	if (curToken[tokenNum].type_inf == SEMI || curToken[tokenNum].type_inf == RPAREN)return;
+	if (curToken[tokenNum].type_inf == COMMA) {
 		Match(COMMA);
 		RDFormList(t);
 	}
 	else {
 		cout << curToken[tokenNum].linenum << " " << curToken[tokenNum].content << " error!unexpected token." << endl;
+		//exit(0);
 		tokenNum++;
 	}
 	
@@ -566,6 +582,7 @@ grammarTreeNode* RDProcBody() {
 	t = RDProgramBody();
 	if (t == NULL) {
 		cout << curToken[tokenNum].linenum << " " << curToken[tokenNum].content << " error! Without procBody!";
+		//exit(0);
 	}
 	return t;
 }
@@ -600,6 +617,7 @@ grammarTreeNode* RDStmMore() {
 	}
 	else {
 		cout << curToken[tokenNum].linenum << " " << curToken[tokenNum].content << " error!unexpected token." << endl;
+		//exit(0);
 		tokenNum++;
 	}
 	return t;
@@ -639,6 +657,7 @@ grammarTreeNode* RDStm() {
 	}
 	else {
 		cout << curToken[tokenNum].linenum << " " << curToken[tokenNum].content << " error!unexpected token." << endl;
+		//exit(0);
 		tokenNum++;
 	}
 	return t;
@@ -656,6 +675,7 @@ grammarTreeNode* RDAssCall() {
 	}
 	else {
 		cout << curToken[tokenNum].linenum << " " << curToken[tokenNum].content << " error!unexpected token." << endl;
+		//exit(0);
 		tokenNum++;
 	}
 	return t;
@@ -710,12 +730,12 @@ grammarTreeNode* RDInputStm() {
 	grammarTreeNode* t = new grammarTreeNode(StmtK, curToken[tokenNum].linenum);
 	t->kind.stmt = ReadK;
 	Match(READ);
-	Match(RPAREN);
+	Match(LPAREN);
 	if (curToken[tokenNum].type_inf == ID) {
 		t->name[t->nameNum++] = curToken[tokenNum].content;
 	}
 	Match(ID);
-	Match(LPAREN);
+	Match(RPAREN);
 	return t;
 }
 // outputStm ::=   WRITE(exp)
@@ -764,6 +784,7 @@ grammarTreeNode* RDActParamList() {
 	}
 	else {
 		cout << curToken[tokenNum].linenum << " " << curToken[tokenNum].content << " error!unexpected token." << endl;
+		//exit(0);
 		tokenNum++;
 	}
 	return t;
@@ -782,6 +803,7 @@ grammarTreeNode* RDActParamMore() {
 	}
 	else {
 		cout << curToken[tokenNum].linenum << " " << curToken[tokenNum].content << " error!unexpected token." << endl;
+		//exit(0);
 		tokenNum++;
 	}
 }
@@ -862,6 +884,7 @@ grammarTreeNode* RDfactor() {
 	}
 	else {
 		cout << curToken[tokenNum].linenum << " " << curToken[tokenNum].content << " error!unexpected token." << endl;
+		//exit(0);
 		tokenNum++;
 	}
 	return t;
@@ -919,6 +942,7 @@ void RDvariMore(grammarTreeNode* t) {
 	}
 	else {
 		cout << curToken[tokenNum].linenum << " " << curToken[tokenNum].content << " error!unexpected token." << endl;
+		//exit(0);
 		tokenNum++;
 	}
 }

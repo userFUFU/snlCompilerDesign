@@ -24,13 +24,16 @@ begin
 end
 begin
    if s1<10
-   then s2:=s1+10
+   then s2:=s1+10;
+	s1:=10
    else s2:=s1-10	
    fi;
    sss(s2)
 end
 begin      
    read(a);
-   sd(a,b);
-   write(b)
+  sd(a,b);
+  write(b);
+sd(a, b)
+
 end.

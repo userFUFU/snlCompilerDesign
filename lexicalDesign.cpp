@@ -50,9 +50,11 @@ map<LexType, string>enumToStr = {
 };
 
 
-
 bool isCharOrNum(char c) {
-	return (c >= 'a' && c <= 'z') || (c >= '0' && c <= '9');
+	return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9');
+}
+bool isChar(char c) {
+	return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z');
 }
 string SCDelimiter(char c) {
 	string ans = "";
@@ -76,6 +78,12 @@ string SCDelimiter(char c) {
 	}
 	return ans;
 }
+/*
+bool convertEndfile(bool endfile) {
+	return endfile;
+}
+*/
+bool endfile = false;
 // 输入一行，识别单词，并输出该行的单词的token
 int getToken(string str,int linenum,Token* token,int tokencnt){
 	//cout << linenum <<" " <<str<< endl;
@@ -83,13 +91,17 @@ int getToken(string str,int linenum,Token* token,int tokencnt){
 	int len = str.length();
 	int index = 0;
 	while (index < len){
+		if (endfile) {
+			cout << "File ended already!" << endl;
+			return tokencnt;
+		}
 		// 空格，不看
 		if (str[index] == ' ' || str[index] == '\t') {
 			index++;
 			continue;
 		}
 		// 以字母开头，可能为保留字，可能为标识符，
-		if (str[index] >= 'a' && str[index] <= 'z') {
+		if (isChar(str[index])) {
 			tmp += str[index];
 			index++;
 			while (index < len && isCharOrNum(str[index]))tmp += str[index++];
@@ -141,16 +153,20 @@ int getToken(string str,int linenum,Token* token,int tokencnt){
 			continue;
 		}
 		// 以 { 开头 ，注释部分，直接忽略
-		// 暂未考虑 无右括号或括号数目匹配 的错误处理 ？？？
+		// 暂未考虑 无右括号（done）或括号数目匹配 的错误处理 ？？？
 		else if (str[index] == '{') {
 			while (index < len && str[index] != '}')index++;
+			if (index >= len && str[index] != '}') {
+				cout << "error! 第 " << linenum << " 行,缺少 } 。" << endl;
+			}
 			index++;
 			continue;
 		}
 		// 以 . 开头
 		else if (str[index] == '.') {
-			if ((index+1)<len && str[++index] == '.') { // 可能有错误？？？
+			if ((index+1)<len && str[index+1] == '.') { // 可能有错误？？？
 				//cout << linenum << " 数组下标界限符 " << "UNDERANGE(..)" << " " << "无" << endl;
+				index++;
 				token[tokencnt].type_inf = UNDERANGE;
 				token[tokencnt].content = "..";
 				token[tokencnt].linenum = linenum;
@@ -159,23 +175,27 @@ int getToken(string str,int linenum,Token* token,int tokencnt){
 				index++;
 				continue;
 			}
-			else if ((index + 1) < len) {
-				token[tokencnt].type_inf = DOT;
-				token[tokencnt].content = ".(Record Member Symbol)";
-				token[tokencnt].linenum = linenum;
-				token[tokencnt].tokennum = tokencnt;
-				tokencnt++;
-				continue;
-			}
-			else{
+			else if(token[tokencnt-1].type_inf = END1){
 				//cout << linenum << " 程序结束 " << "END" << " " << "无" << endl;
 				token[tokencnt].type_inf = DOT;
 				token[tokencnt].content = ".";
 				token[tokencnt].linenum = linenum;
 				token[tokencnt].tokennum = tokencnt;
 				tokencnt++;
+				index++;
+				endfile = true;
 				break;
 			}
+			else if ((index + 1) < len) {
+				token[tokencnt].type_inf = DOT;
+				token[tokencnt].content = ".(Record Member Symbol)";
+				token[tokencnt].linenum = linenum;
+				token[tokencnt].tokennum = tokencnt;
+				tokencnt++;
+				index++;
+				continue;
+			}
+			
 		}
 		// 单字符分界符
 		else{
@@ -189,7 +209,7 @@ int getToken(string str,int linenum,Token* token,int tokencnt){
 				tokencnt++;
 			}
 			else {
-				cout << "error! 第 " << linenum << " 行,单字符分界符出错。" << endl;
+				cout << "error! 第 " << linenum << " 行,illegal word  '"<< str[index] <<"'"<< endl;
 			}
 			index++;
 			continue;

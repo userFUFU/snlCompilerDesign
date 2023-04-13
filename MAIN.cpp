@@ -6,6 +6,7 @@
 #include "grammarDesign.h"
 #include "RDDesign.h"
 #include "LLDesign.h"
+#include "semantemeDesign.h"
 
 using namespace std;
 #define maxn 100086
@@ -16,7 +17,9 @@ int tokencnt=1;
 extern map<LexType, string> enumToStr;
 
 int main() {
-	freopen("./examples/array.txt", "r", stdin);
+	// freopen("./examples/errorTest/contentAfterEnd.txt", "r", stdin);
+	 freopen("./examples/var_val.txt", "r", stdin);
+	// freopen("./source.txt", "r", stdin);
 
 	string tokenList = ""; // 词法分析结果
 	string sourceList = "";  // 源程序的一行
@@ -40,18 +43,21 @@ int main() {
 	for (int i = 1; i <= tokencnt; i++) {
 		cout << token[i].tokennum << " " << token[i].linenum << " " << enumToStr[token[i].type_inf] << " " << token[i].content << endl;
 	}
+	cout << endl << "*************************************************************************************************" << endl;
 
 	/* 语法分析 */
 
 	// 递归下降分析法
 	grammarTreeNode* RDRoot = RDmain(token, tokencnt);
 	printGrammarTree(0, RDRoot);
+	cout << endl << "*************************************************************************************************" << endl;
 	// LL(1)分析法
-	//grammarTreeNode* LLRoot = LLmain(token, tokencnt);
-	//printGrammarTree(0, LLRoot);
-
+	grammarTreeNode* LLRoot = LLmain(token, tokencnt);
+	printGrammarTree(0, LLRoot);
+	cout << endl << "*************************************************************************************************" << endl;
 
 	// 语义分析
-	                        
+	//smtMain(RDRoot);
+
 	return 0;
 }

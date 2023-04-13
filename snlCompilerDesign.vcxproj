@@ -143,6 +143,7 @@
     <ClCompile Include="LLDesign.cpp" />
     <ClCompile Include="MAIN.cpp" />
     <ClCompile Include="RDDesign.cpp" />
+    <ClCompile Include="smtDesign.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="grammarDesign.h" />
@@ -151,6 +152,7 @@
     <ClInclude Include="LLDesign.h" />
     <ClInclude Include="RDDesign.h" />
     <ClInclude Include="resource.h" />
+    <ClInclude Include="semantemeDesign.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="snlCompilerDesign.rc" />

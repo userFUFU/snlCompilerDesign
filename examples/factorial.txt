@@ -17,4 +17,4 @@ begin
 read(s);
 factor(s,t);
 write(t)
-end. 
+end.
