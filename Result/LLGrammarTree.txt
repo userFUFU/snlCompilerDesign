@@ -1,0 +1,72 @@
+ProK 
+    PheadK combination
+    TypeK 
+        DecK ArrayK 1 20 IntegerK s 
+    VarK 
+        DecK DecIdK s a 
+        DecK IntegerK n r 
+    ProcDecK com
+        DecK IntegerK s j valparamType 
+        VarK 
+            DecK IntegerK i k 
+        StmLK 
+            StmtK AssignK 
+                ExpK ExpIdK IdV i 
+                ExpK ExpIdK IdV s 
+            StmtK WhileK 
+                ExpK OpK < 
+                    ExpK ExpIdK IdV i 
+                    ExpK OpK - 
+                        ExpK OpK + 
+                            ExpK ExpIdK IdV n 
+                            ExpK ConstK 2 
+                        ExpK ExpIdK IdV j 
+                StmtK AssignK 
+                    ExpK ExpIdK ArrayMembV a 
+                        ExpK OpK - 
+                            ExpK OpK + 
+                                ExpK ExpIdK IdV r 
+                                ExpK ConstK 1 
+                            ExpK ExpIdK IdV j 
+                    ExpK ExpIdK IdV i 
+                StmtK IfK 
+                    ExpK OpK < 
+                        ExpK ExpIdK IdV j 
+                        ExpK ConstK 2 
+                    StmtK AssignK 
+                        ExpK ExpIdK IdV k 
+                        ExpK ConstK 1 
+                    StmtK WhileK 
+                        ExpK OpK < 
+                            ExpK ExpIdK IdV k 
+                            ExpK OpK + 
+                                ExpK ExpIdK IdV r 
+                                ExpK ConstK 1 
+                        StmtK WriteK 
+                            ExpK ExpIdK ArrayMembV a 
+                                ExpK ExpIdK IdV k 
+                        StmtK AssignK 
+                            ExpK ExpIdK IdV k 
+                            ExpK OpK + 
+                                ExpK ExpIdK IdV k 
+                                ExpK ConstK 1 
+                    StmtK CallK  
+                        ExpK ExpIdK IdV com 
+                        ExpK OpK + 
+                            ExpK ExpIdK IdV i 
+                            ExpK ConstK 1 
+                        ExpK OpK - 
+                            ExpK ExpIdK IdV j 
+                            ExpK ConstK 1 
+                    StmtK AssignK 
+                        ExpK ExpIdK IdV i 
+                        ExpK OpK + 
+                            ExpK ExpIdK IdV i 
+                            ExpK ConstK 1 
+    StmLK 
+        StmtK ReadK n 
+        StmtK ReadK r 
+        StmtK CallK  
+            ExpK ExpIdK IdV com 
+            ExpK ConstK 1 
+            ExpK ExpIdK IdV r 

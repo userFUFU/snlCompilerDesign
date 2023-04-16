@@ -10,8 +10,9 @@ typedef enum{ intTy, charTy , arrayTy, recordTy, boolTy } Typekind;
 typedef  enum { typeKind, varKind, procKind }IdKind;
 
 // 形参表
+struct tNode;
 typedef struct  paramTable{
-	struct symbtable* entry;
+	struct tNode* entry;
 	struct paramTable* next;
 }ParamNode;
 
@@ -19,13 +20,13 @@ typedef enum { dir, indir } AccessKind;
 
 
 // 类型的内部表示
-
-struct fieldChain {
+struct typeNode;
+typedef struct FieldChain {
 	string name;
-	Typekind unitTy; // 成员类型
+	struct typeNode* unitTy;  // 成员类型
 	int off;
-	fieldChain* next;
-};
+	FieldChain* next;
+}fieldChain;
 
 typedef struct typeNode {
 	int size;
@@ -34,10 +35,14 @@ typedef struct typeNode {
 		struct {
 			struct typeNode* indexTy;
 			struct typeNode* elemTy;
+			int low, up;
 		}arrayAttr; // 数组
-		fieldChain* body; // 域类型链表
+		fieldChain* body;  // 域类型链表
 	};
 }typeIR;
+
+
+
 
 // 标识符的结构
 typedef struct {
@@ -62,12 +67,13 @@ typedef struct {
 		}procAttr; //  函数/过程
 	}Attr;
 
-	//int offset;
+	int offset;
 	//AccessKind access;
 }AttributeIR;
 
 // 符号表的结构
 typedef struct tNode{
+	int level;
 	string name;
 	AttributeIR attrIR;
 	tNode* next;
@@ -82,14 +88,36 @@ typedef struct tNode{
 
 
 void smtMain(grammarTreeNode* r);
-
+void init();
 void typeDecPart(grammarTreeNode* r);
-void varDecPart(grammarTreeNode* r);
+typeIR* typeProcess(grammarTreeNode* t, DecKind deckind);
+typeIR* arrayType(grammarTreeNode* r);
+typeIR* charType();
+typeIR* intType();
+typeIR* boolType();
+typeIR* recordType(grammarTreeNode* r);
+typeIR* nameType(grammarTreeNode* r);
+void varDecList(grammarTreeNode* r);
 void procDecPart(grammarTreeNode* r);
-void procBody(grammarTreeNode* r);
-
-void createTable();
+smtTable* HeadProcess(grammarTreeNode* r);
+paramTable* paramDecList(grammarTreeNode* r);
+void Body(grammarTreeNode* r);
+void statement(grammarTreeNode* r);
+typeIR* Expr(grammarTreeNode* r, AccessKind* Ekind);
+void ifStatement(grammarTreeNode* r);
+void whileStatement(grammarTreeNode* r);
+void assignStatement(grammarTreeNode* r);
+typeIR* arrayVar(grammarTreeNode* r);
+typeIR* recordVar(grammarTreeNode* r);
+void readStatement(grammarTreeNode* r);
+void writeStatement(grammarTreeNode* r);
+void callStatement(grammarTreeNode* r);
+void returnStatement(grammarTreeNode* r);
 smtTable* newTable();
+void createTable();
 void DestroyTable();
-bool Enter(char* id, AttributeIR* attribP, smtTable** entry);
-
+int FindEntry(string id, smtTable** entry);
+int searchOneTable(string id, int now, smtTable** entry);
+bool findField(string id, fieldChain* head, fieldChain** entry);
+bool Enter(string id, AttributeIR* attribP, smtTable** entry);
+void printSymbTable();

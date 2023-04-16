@@ -1,0 +1,30 @@
+program combination
+type
+    s = array[1..20] of integer;
+var
+    s a;
+    integer n, r;
+procedure com(integer s, j);
+    var
+        integer i, k;
+    begin
+        i := s;
+        while i < n + 2 - j do
+            a[r + 1 - j] := i;
+            if j < 2 then
+                k := 1;
+                while k < r + 1 do
+                    write(a[k]);
+                    k := k + 1
+                endwh
+            else
+                com(i + 1, j - 1);
+                i := i + 1
+            fi
+        endwh
+    end
+begin
+    read(n);
+    read(r);
+    com(1, r)
+end.

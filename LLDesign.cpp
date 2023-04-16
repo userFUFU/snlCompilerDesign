@@ -55,8 +55,8 @@ grammarTreeNode* LLmain(Token token[], int num) {
 			else { // 匹配不成功
 				cout << "第" << token[tokenno].linenum << "行,语法错误:unexpected  token." << endl;
 				cout <<"当前token:" <<token[tokenno].type_inf<<"  " << token[tokenno].content << " ; 当前符号栈顶(终极符):" << now->content.tWord <<endl;
-				printGrammarTree(0, root);
-				exit(0);
+				//printGrammarTree(0, root);
+				//exit(0);
 			}
 		}
 		else { // 栈顶为非终极符
@@ -67,9 +67,9 @@ grammarTreeNode* LLmain(Token token[], int num) {
 	}
 	if (token[tokenno].type_inf != ENDFILE) { // 栈已空，输入流不空
 		cout << "EOF error!" << endl;
-		exit(0);
+		//exit(0);
 	}
-	cout << "no error! print LL(1) Tree!" << endl;
+	//cout << "no error! print LL(1) Tree!" << endl;
 	// printGrammarTree(0, root);
 	return root;
 }
@@ -1119,8 +1119,10 @@ void predict(int num) {
 		while (priority(opTop) >= priority(curTokenLL[tokenno].type_inf)) {
 			grammarTreeNode* t = opStack.top();
 			opStack.pop();
-			grammarTreeNode* left = numberStack.top(); numberStack.pop();
+			//grammarTreeNode* left = numberStack.top(); numberStack.pop();
+			//grammarTreeNode* right = numberStack.top(); numberStack.pop();
 			grammarTreeNode* right = numberStack.top(); numberStack.pop();
+			grammarTreeNode* left = numberStack.top(); numberStack.pop();
 
 			t->child[0] = left;
 			t->child[1] = right;
@@ -1145,8 +1147,11 @@ void predict(int num) {
 			while (opStack.top()->Attr.expAttr.op != LPAREN) {
 				grammarTreeNode* t = opStack.top();
 				opStack.pop();
-				grammarTreeNode* left = numberStack.top(); numberStack.pop();
+				//grammarTreeNode* left = numberStack.top(); numberStack.pop();
+				//grammarTreeNode* right = numberStack.top(); numberStack.pop();
 				grammarTreeNode* right = numberStack.top(); numberStack.pop();
+				grammarTreeNode* left = numberStack.top(); numberStack.pop();
+
 				t->child[0] = left;
 				t->child[1] = right;
 				numberStack.push(t);
@@ -1159,8 +1164,11 @@ void predict(int num) {
 				while (opStack.top()->Attr.expAttr.op != END1) {
 					grammarTreeNode* t = opStack.top();
 					opStack.pop();
-					grammarTreeNode* left = numberStack.top(); numberStack.pop();
+					//grammarTreeNode* left = numberStack.top(); numberStack.pop();
+					//grammarTreeNode* right = numberStack.top(); numberStack.pop();
 					grammarTreeNode* right = numberStack.top(); numberStack.pop();
+					grammarTreeNode* left = numberStack.top(); numberStack.pop();
+
 					t->child[0] = left;
 					t->child[1] = right;
 					numberStack.push(t);
@@ -1193,8 +1201,10 @@ void predict(int num) {
 		while (priority(opTop) >= priority(curTokenLL[tokenno].type_inf)) {
 			grammarTreeNode* t = opStack.top();
 			opStack.pop();
-			grammarTreeNode* left = numberStack.top(); numberStack.pop();
+			//grammarTreeNode* left = numberStack.top(); numberStack.pop();
+			//grammarTreeNode* right = numberStack.top(); numberStack.pop();
 			grammarTreeNode* right = numberStack.top(); numberStack.pop();
+			grammarTreeNode* left = numberStack.top(); numberStack.pop();
 
 			t->child[0] = left;
 			t->child[1] = right;
@@ -1225,8 +1235,10 @@ void predict(int num) {
 		while (priority(opTop) >= priority(curTokenLL[tokenno].type_inf)) {
 			grammarTreeNode* t = opStack.top();
 			opStack.pop();
-			grammarTreeNode* left = numberStack.top(); numberStack.pop();
+			//grammarTreeNode* left = numberStack.top(); numberStack.pop();
+			//grammarTreeNode* right = numberStack.top(); numberStack.pop();
 			grammarTreeNode* right = numberStack.top(); numberStack.pop();
+			grammarTreeNode* left = numberStack.top(); numberStack.pop();
 
 			t->child[0] = left;
 			t->child[1] = right;
@@ -1370,7 +1382,7 @@ void predict(int num) {
 	default: {
 		cout << "第" << lineno << "行,语法错误:unexpected  token." << endl;
 		cout << "predict num : " << num << endl;
-		exit(0);
+		//exit(0);
 		break;
 	}
 	}

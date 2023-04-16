@@ -38,7 +38,7 @@ grammarTreeNode* RDProgram() {
 	root->child[1] = RDDeclarePart();
 	root->child[2] = RDProgramBody();
 	Match(DOT);
-	cout << "no error! print RD Tree!" << endl;
+	//cout << "no error! print RD Tree!" << endl;
 	return root;
 }
 
@@ -870,7 +870,7 @@ grammarTreeNode* RDfactor() {
 		//数字处理部分；
 		t = new grammarTreeNode(ExpK, curToken[tokenNum].linenum);
 		t->kind.exp = ConstK;
-		t->Attr.expAttr.varKind = IdV;
+		// t->Attr.expAttr.varKind = IdV;
 		t->Attr.expAttr.val = stoi(curToken[tokenNum].content);
 		Match(INTC);
 	}

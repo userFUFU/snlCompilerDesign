@@ -76,6 +76,7 @@ static map<ParamType, string>displayParamType{ {valparamType,"valparamType"},{va
 typedef enum { Void=1, Integer, Boolean } ExpType;
 static map<ExpType, string>displayExpType{ {Void,"Void"},{Integer,"Integer"},{Boolean,"Boolean"} };
 
+struct tNode; //提前声明语义分析符号表的结构
 // 语法树节点结构
 typedef struct grammarnode{
 	int linenum;
@@ -124,6 +125,9 @@ typedef struct grammarnode{
 		nodeKind = myKind;
 		linenum = line;
 	}
+
+    // 语义分析阶段，对应的符号表地址
+    struct tNode* table[12];
 }grammarTreeNode;
 
 
@@ -154,6 +158,7 @@ inline void printGrammarTree(int spaceNum, grammarTreeNode* r) {
 
 		// 基本语法信息
 		string decKstr = displayDecKind[r->kind.dec];
+
 		switch (r->kind.dec) {
 		case ArrayK:
 		{
@@ -181,6 +186,7 @@ inline void printGrammarTree(int spaceNum, grammarTreeNode* r) {
 			cout << decKstr << " " << r->typeName << " ";
 			break;
 		}
+
 		// 输出名字
 		if (r->nameNum) {
 			for (int i = 0; i < r->nameNum; i++)cout << r->name[i] << " ";
@@ -273,15 +279,15 @@ inline void printGrammarTree(int spaceNum, grammarTreeNode* r) {
 		case ConstK: {
 			cout << expKstr << " ";
 
+            /*
 			string varKstr = displayVarKind[r->Attr.expAttr.varKind];
 			switch (r->Attr.expAttr.varKind) {
 			case IdV:cout << varKstr << " "; break;
 			case ArrayMembV:cout << varKstr << " "; break;
 			case FieldMembV:cout << varKstr << " "; break;
-				/*default:
-					cout << "error! var type.";
-					break;*/
+				
 			}
+            */
 			cout << r->Attr.expAttr.val << " ";
 			break;
 		}
@@ -356,9 +362,9 @@ inline bool RsonNeedParen(grammarTreeNode* r) {
         string op1 = convertOp(r->Attr.expAttr.op), op2 = convertOp(r->child[1]->Attr.expAttr.op);
         if (op1 == "*")
             return op2 == "+" || op2 ==  "-";
-        if (op1 == "*")
+        if (op1 == "-")
             return op2 == "+" || op2 == "-";
-        return op1 == "*";
+        return op1 == "/";
     }
     return false;
 }
@@ -382,7 +388,7 @@ inline string generateCode(int tab, grammarTreeNode *r, grammarTreeNode* fa){
                         flag = true;
                     }
                     else {
-                        res += "\r\n";
+                        res += "\n";
                         cout << endl;
                     }
                     res += generateCode(0, c, r);
@@ -405,7 +411,7 @@ inline string generateCode(int tab, grammarTreeNode *r, grammarTreeNode* fa){
         c = r -> child[0];
         while (c != NULL) {
             cout << endl;
-            res += "\r\n" + generateCode(tab + 1, c , r);
+            res += "\n" + generateCode(tab + 1, c , r);
             c = c -> sibling;
         }
         break;
@@ -415,7 +421,7 @@ inline string generateCode(int tab, grammarTreeNode *r, grammarTreeNode* fa){
         c = r->child[0];
         while (c != NULL) {
             cout << endl;
-            res += "\r\n" + generateCode(tab + 1, c, r);
+            res += "\n" + generateCode(tab + 1, c, r);
             c = c -> sibling;
         }
         break;
@@ -440,11 +446,11 @@ inline string generateCode(int tab, grammarTreeNode *r, grammarTreeNode* fa){
                 break;
             case RecordK: {
                 string pre = string((printName(r) + " = ").length(), ' ');
-                res += printName(r) + " = record\r\n";
-                cout << (printName(r) + " = record\r\n");
+                res += printName(r) + " = record\n";
+                cout << (printName(r) + " = record\n");
                 c = r->child[0];
                 while (c != NULL) {
-                    res += generateCode(tab + 1 + pre.length() / 4, c, r) + "\r\n";
+                    res += generateCode(tab + 1 + pre.length() / 4, c, r) + "\n";
                     cout << endl;
                     c = c->sibling;
                 }
@@ -484,11 +490,11 @@ inline string generateCode(int tab, grammarTreeNode *r, grammarTreeNode* fa){
                 break;
             case RecordK:
                 if (fa->nodeKind != ProcDecK) {
-                    res += "record\r\n";
-                    cout << ("record\r\n");
+                    res += "record\n";
+                    cout << ("record\n");
                     c = r->child[0];
                     while (c != NULL) {
-                        res += generateCode(tab + 1, c, r) + "\r\n";
+                        res += generateCode(tab + 1, c, r) + "\n";
                         cout << endl;
                         if (c -> sibling != NULL) {
                             cout << (";");
@@ -551,10 +557,14 @@ inline string generateCode(int tab, grammarTreeNode *r, grammarTreeNode* fa){
                 cout << (");");
             }
         }
+        else {
+            res += ");";
+            cout << (");");
+        }
         for (int i = 1; i < 3; i++) {
             if (r->child[i] != NULL) {
-                cout << ("\r\n");
-                res += "\r\n" + generateCode(tab + 1, r->child[i], r);
+                cout << ("\n");
+                res += "\n" + generateCode(tab + 1, r->child[i], r);
             }
         }
         break;
@@ -564,8 +574,8 @@ inline string generateCode(int tab, grammarTreeNode *r, grammarTreeNode* fa){
         c = r->child[0];
         if (c != NULL) {
             while (c != NULL) {
-                cout << ("\r\n");
-                res += "\r\n" + generateCode(tab + 1, c, r);
+                cout << ("\n");
+                res += "\n" + generateCode(tab + 1, c, r);
                 if (c -> sibling != NULL) {
                     cout << (";");
                     res += ";";
@@ -573,8 +583,8 @@ inline string generateCode(int tab, grammarTreeNode *r, grammarTreeNode* fa){
                 c = c -> sibling;
             }
         }
-        res += "\r\n" + tabSpace + "end";
-        cout << ("\r\n" + tabSpace + "end");
+        res += "\n" + tabSpace + "end";
+        cout << ("\n" + tabSpace + "end");
         break;
     case StmtK:
         switch (r->kind.stmt) {
@@ -588,7 +598,7 @@ inline string generateCode(int tab, grammarTreeNode *r, grammarTreeNode* fa){
             if (c != NULL) {
                 while (c != NULL) {
                     cout << endl;
-                    res += "\r\n" + generateCode(tab + 1, c, r);
+                    res += "\n" + generateCode(tab + 1, c, r);
                     if (c -> sibling != NULL) {
                         cout << (";");
                         res += ";";
@@ -598,11 +608,11 @@ inline string generateCode(int tab, grammarTreeNode *r, grammarTreeNode* fa){
             }
             c = r->child[2];
             if (c != NULL) {
-                cout << ("\r\n" + tabSpace + "else");
-                res += "\r\n" + tabSpace + "else";
+                cout << ("\n" + tabSpace + "else");
+                res += "\n" + tabSpace + "else";
                 while (c != NULL) {
                     cout << endl;
-                    res += "\r\n" + generateCode(tab + 1, c, r);
+                    res += "\n" + generateCode(tab + 1, c, r);
                     if (c -> sibling != NULL) {
                         cout << (";");
                         res += ";";
@@ -610,8 +620,8 @@ inline string generateCode(int tab, grammarTreeNode *r, grammarTreeNode* fa){
                     c = c -> sibling;
                 }
             }
-            cout << ("\r\n" + tabSpace + "fi");
-            res += "\r\n" + tabSpace + "fi";
+            cout << ("\n" + tabSpace + "fi");
+            res += "\n" + tabSpace + "fi";
             break;
         case WhileK:
             cout << ("while ");
@@ -620,15 +630,15 @@ inline string generateCode(int tab, grammarTreeNode *r, grammarTreeNode* fa){
             c = r->child[1];
             while (c != NULL) {
                 cout << endl;
-                res += "\r\n" + generateCode(tab + 1, c, r);
+                res += "\n" + generateCode(tab + 1, c, r);
                 if (c -> sibling != NULL) {
                     cout << (";");
                     res += ";";
                 }
                 c = c -> sibling;
             }
-            res += "\r\n" + tabSpace + "endwh";
-            cout << ("\r\n" + tabSpace + "endwh");
+            res += "\n" + tabSpace + "endwh";
+            cout << ("\n" + tabSpace + "endwh");
             break;
         case AssignK:
             res += generateCode(0, r->child[0], r);
@@ -714,6 +724,7 @@ inline string generateCode(int tab, grammarTreeNode *r, grammarTreeNode* fa){
         }
         break;
     }
+
     return res;
 
 }

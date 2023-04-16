@@ -1,0 +1,2 @@
+第23行,语法错误:unexpected  token.
+当前token:13  endwh ; 当前符号栈顶(终极符):10

@@ -33,7 +33,7 @@ void RDvarIdMore(grammarTreeNode* t);
 grammarTreeNode* RDProcDec();
 grammarTreeNode* RDProcDeclaration();
 void RDparamlist(grammarTreeNode* t);
-grammarTreeNode* RDParamDecList();//
+grammarTreeNode* RDParamDecList();
 grammarTreeNode* RDParamMore();
 grammarTreeNode* RDParam();
 void RDFormList(grammarTreeNode* t);

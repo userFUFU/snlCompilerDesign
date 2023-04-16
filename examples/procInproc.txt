@@ -3,9 +3,9 @@
 
 program  example
 type w1=record
-        integer x;
-        integer y;
-        end;
+            integer x;
+            integer y;
+           end;
 var  
      integer a;
      integer b;
